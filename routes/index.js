@@ -10,6 +10,8 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
   console.log(req.body)
 
+  let url = req.body["link"];
+
   let execShellCommand = (command) => {
     return new Promise(
       (resolve, reject) => {
@@ -31,17 +33,28 @@ router.post('/', function(req, res, next) {
     );
   };
 
-  execShellCommand("ls -la").then(
-    result => { 
-      console.log(result)
-      res.json({hello:'success'});
-    }
-  ).catch(
-    error => {
-      console.error(error)
-      res.json({hello:'error'});
-    }
-  );
+  execShellCommand("yt " + url + " ")
+    .then(
+      result => { 
+        console.log(result)
+        return execShellCommand("mv ~/Music/yt/* ~/Downloads")
+      },
+      error => {
+        console.error(error)
+        // Update youtube-dl on an async task ? Then auto-retry ?
+        throw new Error(''+error)
+      }
+    ).then(
+      result => {
+        console.log(result)
+        res.json({"status":'success', "result": " " + result});
+      },
+      error => {
+        console.error(error)
+        // Update youtube-dl on an async task ? Then auto-retry ?
+        res.json({"status":'error', "result": " second error catch" + error});
+      }
+    )
 });
 
 
