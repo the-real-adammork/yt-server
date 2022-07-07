@@ -12,6 +12,7 @@ var app = express();
 app.use(cors());
 
 // view engine setup
+app.set('port', process.env.PORT || 1700);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
